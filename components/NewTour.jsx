@@ -6,22 +6,41 @@ import {
   createNewTour,
   generateTourResponse,
   getExistingTour,
+  fetchUserTokenById,
+  subtractTokens,
 } from "@/utils/actions";
 import toast from "react-hot-toast";
+import { useAuth } from "@clerk/nextjs";
 
 const NewTour = () => {
+  const queryClient = useQueryClient();
+  const { userId } = useAuth();
   const {
     mutate,
     isPending,
     data: tour,
   } = useMutation({
     mutationFn: async (destination) => {
-      const newTour = await generateTourResponse(destination);
-      if (newTour) {
-        return newTour;
+      const existingTour = await getExistingTour(destination);
+      if (existingTour) return existingTour;
+
+      const currentTokens = await fetchUserTokenById(userId);
+
+      if (currentTokens < 300) {
+        toast.error("Token balance too low....");
+        return;
       }
-      toast.error("No matching city found...");
-      return null;
+      const newTour = await generateTourResponse(destination);
+      if (!newTour) {
+        toast.error("No matching city found...");
+        return null;
+      }
+
+      const response = await createNewTour(newTour.tour);
+      queryClient.invalidateQueries({ queryKey: ["tours"] });
+      const newTokens = await subtractTokens(userId, newTour.tokens);
+      toast.success(`${newTokens} tokens remaining...`);
+      return newTour.tour;
     },
   });
 
@@ -65,9 +84,7 @@ const NewTour = () => {
         </div>
       </form>
       <div className="mt-16">
-        <div className="mt-16">
-          {tour ? <TourInfo tour={tour} /> : null}
-          </div>
+        <div className="mt-16">{tour ? <TourInfo tour={tour} /> : null}</div>
       </div>
     </>
   );
