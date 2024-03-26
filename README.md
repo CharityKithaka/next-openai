@@ -1,12 +1,22 @@
-# next_openai 
+# NEXTJS-OPENAI PROJECT
 
 This is a NextJS project integrated with OPENAI to play around with chatgpt features.
 
 ## Development
+```
+# Clone the repository
+git clone https://github.com/CharityKithaka/next-openai.git
 
-```npm install```
+# Change directory
+cd next-openai
 
-```npm run dev```
+# Install dependencies
+npm install
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+# Start the NextJS server
+npm run dev
+
+```
+Happy coding 
+
 
