@@ -1,11 +1,14 @@
 "use server";
 
+import 'openai/shims/node';
+
 import OpenAI from "openai";
 import prisma from "./db";
 import { revalidatePath } from "next/cache";
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
+  dangerouslyAllowBrowser: process.env.NODE_ENV === 'test'
 });
 
 export const generateChatResponse = async (chatMessages) => {

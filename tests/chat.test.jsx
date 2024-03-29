@@ -4,6 +4,14 @@ import Chat from "@/components/Chat";
 import "openai/shims/node";
 import OpenAI from "openai";
 
+jest.mock('@clerk/nextjs', () => ({
+  useAuth: () => ({ userId: '123' }),
+}))
+
+jest.mock("@tanstack/react-query", () => ({
+  useMutation: jest.fn().mockReturnValue({ mutate: jest.fn(), isPending: false, data: {}  }),
+}));
+
 describe("Chat Component", () => {
   it("should submit a message and show a success toast", async () => {
     const { getByPlaceholderText, getByText } = render(<Chat />);
